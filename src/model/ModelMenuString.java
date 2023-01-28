@@ -14,21 +14,22 @@ public class ModelMenuString {
         afficherTextPourSaisie();
         String choix_texte = "";
         int choix_nombre = 0;
-        while (choix_texte.length()==0){
+        while (true){
             choix_texte = scanner.nextLine();
+
             try {
                 choix_nombre = Integer.parseInt(choix_texte);
                 if (choix_nombre < 1 || choix_nombre > modelMenuItems.length)
                     System.out.println("Désolé le nombre choisi ne fait pas partir de l'intervalle proposée.");
+                else
+                    return choix_nombre - 1;
             }catch (RuntimeException runtimeException){
                 System.out.println("Veuillez entrer un choix correct.");
             }
 
-            if (choix_texte.length()>0)
-                break;
             afficherTextPourSaisie();
         }
-        return choix_nombre -1;
+
 
     }
 

@@ -1,12 +1,12 @@
 package model;
 
 public enum MotifCompartimentNavireEnum {
-    DETRUIT("╳╳"),
-    CACHE("██"),
-    CUIRASE("**"),
-    CROISEUR("oo"),
-    DESTROYER("++"),
-    SOUSMARIN("ss");
+    DETRUIT(ConsoleColors.RED +"╳╳"+ConsoleColors.RESET),
+    CACHE(ConsoleColors.WHITE_BOLD+"██"+ConsoleColors.RESET),
+    CUIRASE(ConsoleColors.GREEN+"**"+ConsoleColors.RESET),
+    CROISEUR(ConsoleColors.GREEN+"oo"+ConsoleColors.RESET),
+    DESTROYER(ConsoleColors.GREEN+"++"+ConsoleColors.RESET),
+    SOUSMARIN(ConsoleColors.GREEN+"ss"+ConsoleColors.RESET);
     private final String motifCompartimentNavire;
 
     MotifCompartimentNavireEnum(String motifCompartimentNavire) {

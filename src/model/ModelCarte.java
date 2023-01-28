@@ -11,7 +11,7 @@ public class ModelCarte {
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_VERTICAL = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.NORD, ActionsNavirePossibleSurUneCarteEnum.SUD);
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_HORIZONTAL = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.OUEST, ActionsNavirePossibleSurUneCarteEnum.EST);
 
-    private static final PositionSurCarte[] POINT_DATTAQUE_SELON_PUISSANCE_DATTAQUE = new PositionSurCarte[]{new PositionSurCarte(0,0), new PositionSurCarte(1,0), new PositionSurCarte(1,0), new PositionSurCarte(0,1), new PositionSurCarte(-1,0), new PositionSurCarte(0,-1), new PositionSurCarte(1,-1), new PositionSurCarte(1,1), new PositionSurCarte(-1,1), new PositionSurCarte(-1,-1)};
+    private static final PositionSurCarte[] POINT_DATTAQUE_SELON_PUISSANCE_DATTAQUE = new PositionSurCarte[]{new PositionSurCarte(0,0), new PositionSurCarte(1,0), new PositionSurCarte(0,1), new PositionSurCarte(-1,0),  new PositionSurCarte(0,-1), new PositionSurCarte(1,-1), new PositionSurCarte(1,1), new PositionSurCarte(-1,1), new PositionSurCarte(-1,-1)};
     public final String MOTIF_VIDE = "  ";
     public static final int TAILLE_CARTE_PAR_DEFAUT = 15;
     private final int taille;
@@ -143,6 +143,7 @@ public class ModelCarte {
         return orientationEtPositionNavire;
     }
 
+
     public record OrientationEtPositionNavire(OrientationNavireEnum orientationNavireEnum, PositionSurCarte positionSurCarte) {
     }
 
@@ -184,7 +185,7 @@ public class ModelCarte {
             CompartimentSurCarte[] ligneDeCompartimentNavire = compartimentNavires[i];
             StringBuilder tmpBuilder = new StringBuilder();
             for (var colonneCompartimentNavire : ligneDeCompartimentNavire)
-                tmpBuilder.append(String.format("%s│", colonneCompartimentNavire == null ?  MOTIF_VIDE: (colonneCompartimentNavire.estDetruit())? (cachee)? MotifCompartimentNavireEnum.CACHE.getMotifCompartimentNavire():MotifCompartimentNavireEnum.DETRUIT: (cachee)? MOTIF_VIDE:colonneCompartimentNavire.toString()));
+                tmpBuilder.append(String.format("%s│", colonneCompartimentNavire == null ?  MOTIF_VIDE: (colonneCompartimentNavire.estDetruit())? (cachee)? MotifCompartimentNavireEnum.CACHE.getMotifCompartimentNavire():MotifCompartimentNavireEnum.DETRUIT.getMotifCompartimentNavire(): (cachee)? MOTIF_VIDE:colonneCompartimentNavire.toString()));
             stringBuilder.append(String.format("│ %c│%s\n", 'a'+i, tmpBuilder));
             if (i<compartimentNavires.length-1)
                 stringBuilder.append(getLigneDelimiteur());
@@ -331,8 +332,11 @@ public class ModelCarte {
     public void encaisserUneAttatque(ModelNavire modelNavire, PositionSurCarte positionSurCarte) throws ExceptionAttaqueSurUnePositionHorsDeLaCarte {
         if (!verifierSiUnCompartimentPeutEtrePlaceSurLaCarte(positionSurCarte))
             throw new ExceptionAttaqueSurUnePositionHorsDeLaCarte();
+
         var puissanceNavire = modelNavire.getPuissance();
 
+        assert puissanceNavire > 0;
+        assert puissanceNavire <= NavirePuissanceEnum.CUIRASE.getPuissanceNavire();
 
         var positionsAttaquees = new PositionSurCarte[puissanceNavire];
         for (int i = 0; i < puissanceNavire; i++) {

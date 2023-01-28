@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
@@ -136,22 +137,20 @@ public class Main implements Runnable {
 
         ModelCarte modelCarteJoueur = new ModelCarte();
         creerAleatoirementTousLesNaviresSurLaCarte(modelCarteJoueur);
-        var listeDeNavireJoueur = modelCarteJoueur.getModelNaviresAsArray();
-        ModelCarte modelCarteRobot = new ModelCarteRobot();
+
+        ModelCarteRobot modelCarteRobot = new ModelCarteRobot();
         creerAleatoirementTousLesNaviresSurLaCarte(modelCarteRobot);
-        var listeDeNavireRobot = modelCarteJoueur.getModelNaviresAsArray();
-        Main main_object = new Main(modelCarteJoueur, modelCarteRobot);
-        // pass the runnable reference to Thread
-        // Thread t = new Thread(main_object, "main_object");
+
         afficherLesCartes(modelCarteJoueur, modelCarteRobot);
-        //modelCarteRobot.faireAvancerLeNavireALaPosition(((ModelNavire)modelCarteRobot.getModelNaviresAsArray()[0]).getPremierCompartimentNavire());
 
+        DeroulementPrincipalDuJeu(modelCarteJoueur, modelCarteRobot);
 
-        boolean choixEnCour = true;
-        ActionsNavirePossibleSurUneCarteEnum input = null;
+    }
 
+    private static void DeroulementPrincipalDuJeu(ModelCarte modelCarteJoueur, ModelCarteRobot modelCarteRobot) {
+        ActionsNavirePossibleSurUneCarteEnum actionChoisisParLutilisateur;
 
-        while (choixEnCour){
+        while (true){
             Scanner scanner = new Scanner(System.in);
             var positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, true);
             if (positionSurCarteEntreeParLutilisateur == null)continue;
@@ -164,74 +163,107 @@ public class Main implements Runnable {
                 System.out.printf("Navire trouvé à la position %c %d: %s%n",positionSurCarteEntreeParLutilisateur.getX()+'a',positionSurCarteEntreeParLutilisateur.getY(),modelNavireTrouve.getTypeNavire());
             }
             ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnums = modelCarteJoueur.getToutesLesActionPossibleDuNavire(modelNavireTrouve);
-            input = actionsNavirePossibleSurUneCarteEnums[new ModelMenuStringActionSurNavire(actionsNavirePossibleSurUneCarteEnums).run(scanner)];
+            actionChoisisParLutilisateur = actionsNavirePossibleSurUneCarteEnums[new ModelMenuStringActionSurNavire(actionsNavirePossibleSurUneCarteEnums).run(scanner)];
 
             // scanner.close();
 
-            switch (input) {
-                case NORD -> {
-                    try {
-                        modelCarteJoueur.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.NORD);
+            executerActionPrise(modelCarteJoueur, modelCarteRobot, actionChoisisParLutilisateur, scanner, modelNavireTrouve);
+            clearScreen();
+            afficherLesCartes(modelCarteJoueur, modelCarteRobot);
+            System.out.println("--------------------------------"+" Appuyer sur entrée pour laisser l'ordianteur jouer "+"--------------------------------");
+            scanner.nextLine();
+            boolean actionRobotTermineAvecSuccess = false;
 
-                    } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, case occupée" + ConsoleColors.RESET);
-                    } catch (AucunNavireTrouverACettePosition e) {
-                        System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
-                    } catch (Throwable e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
-                    }
-                }
-                case SUD -> {
-                    try {
-                        modelCarteJoueur.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.SUD);
 
-                    } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, case occupé" + ConsoleColors.RESET);
-                    } catch (AucunNavireTrouverACettePosition e) {
-                        System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
-                    } catch (Throwable e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, le denier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
-                    }
-                }
-                case OUEST -> {
-                    try {
-                        modelCarteJoueur.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.OUEST);
+            while(!actionRobotTermineAvecSuccess) {
 
-                    } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, case occupée" + ConsoleColors.RESET);
-                    } catch (AucunNavireTrouverACettePosition e) {
-                        System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
-                    } catch (Throwable e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
-                    }
-                }
-                case EST -> {
-                    try {
-                        modelCarteJoueur.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.EST);
+                System.out.println("--------------------------------"+" L'ordinateur effectue un choix de navire"+"--------------------------------");
 
-                    } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, case occupé" + ConsoleColors.RESET);
-                    } catch (AucunNavireTrouverACettePosition e) {
-                        System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
-                    } catch (Throwable e) {
-                        System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, le dernier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
-                    }
-                }
-                case ATTAQUER -> {
+                var navireChoisiParRobot = modelCarteRobot.choisirAleatoirementUnNavire();
+                System.out.println("L'ordinateur a choisi un navire.");
 
-                    try {
-                        positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, false);
-                        modelCarteRobot.encaisserUneAttatque(modelNavireTrouve,positionSurCarteEntreeParLutilisateur);
-                    } catch (ExceptionAttaqueSurUnePositionHorsDeLaCarte e) {
-                        System.out.println(ConsoleColors.RED + "Impossible d'attaquer cette position elle est hors de la carte." + ConsoleColors.RESET);
-                    }
+                ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnumsPourLeRobot = modelCarteJoueur.getToutesLesActionPossibleDuNavire(navireChoisiParRobot);
+                var actionChoisisParLeRobot = actionsNavirePossibleSurUneCarteEnumsPourLeRobot[new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length)];
 
-                }
+                actionRobotTermineAvecSuccess = executerActionPrise(modelCarteRobot, modelCarteJoueur, actionChoisisParLeRobot, null, navireChoisiParRobot);
+
             }
+            System.out.println("--------------------------------"+" Action effectué par le Robot, A votre tour "+"--------------------------------");
             clearScreen();
             afficherLesCartes(modelCarteJoueur, modelCarteRobot);
         }
+    }
 
+    private static boolean executerActionPrise(ModelCarte attaquant, ModelCarte attaque, ActionsNavirePossibleSurUneCarteEnum actionChoisisParLutilisateur, Scanner scanner, ModelNavire modelNavireTrouve) {
+        PositionSurCarte positionSurCarteEntreeParLutilisateur;
+        switch (actionChoisisParLutilisateur) {
+            case NORD -> {
+                try {
+                    attaquant.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.NORD);
+                    return true;
+                } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, case occupée" + ConsoleColors.RESET);
+                } catch (AucunNavireTrouverACettePosition e) {
+                    System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
+                } catch (Throwable e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
+                }
+            }
+            case SUD -> {
+                try {
+                    attaquant.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.SUD);
+                    return true;
+                } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, case occupé" + ConsoleColors.RESET);
+                } catch (AucunNavireTrouverACettePosition e) {
+                    System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
+                } catch (Throwable e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, le denier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
+                }
+            }
+            case OUEST -> {
+                try {
+                    attaquant.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.OUEST);
+                    return true;
+                } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, case occupée" + ConsoleColors.RESET);
+                } catch (AucunNavireTrouverACettePosition e) {
+                    System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
+                } catch (Throwable e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
+                }
+            }
+            case EST -> {
+                try {
+                    attaquant.effectuerUnDeplacementAvecLeNavire(modelNavireTrouve, ActionsNavirePossibleSurUneCarteEnum.EST);
+                    return true;
+                } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, case occupé" + ConsoleColors.RESET);
+                } catch (AucunNavireTrouverACettePosition e) {
+                    System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
+                } catch (Throwable e) {
+                    System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, le dernier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
+                }
+            }
+            case ATTAQUER -> {
+
+                try {
+                    if (scanner != null)
+                        positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, false);
+                    else {
+                        var xRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
+                        var yRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
+                        positionSurCarteEntreeParLutilisateur = new PositionSurCarte(xRobot, yRobot);
+                    }
+                    attaque.encaisserUneAttatque(modelNavireTrouve, positionSurCarteEntreeParLutilisateur);
+                    return true;
+                } catch (ExceptionAttaqueSurUnePositionHorsDeLaCarte e) {
+                    System.out.println(ConsoleColors.RED + "Impossible d'attaquer cette position elle est hors de la carte." + ConsoleColors.RESET);
+                }
+
+            }
+        }
+        return false;
     }
 
     private static void afficherLesCartes(ModelCarte modelCarteJoueur, ModelCarte modelCarteRobot) {
