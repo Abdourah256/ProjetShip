@@ -1,5 +1,10 @@
 package model;
 
+import enums.MotifCompartimentNavireEnum;
+import enums.NavirePuissanceEnum;
+import enums.NavireTypeEnum;
+import enums.OrientationNavireEnum;
+
 public class ModelNavireSousMarin extends ModelNavire {
     public final static int TAILLE = 1;
     public ModelNavireSousMarin(OrientationNavireEnum orientationNavire, PositionSurCarte positionSurCarte) {

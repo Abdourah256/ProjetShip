@@ -1,5 +1,10 @@
 package model;
 
+import enums.MotifCompartimentNavireEnum;
+import enums.NavirePuissanceEnum;
+import enums.NavireTypeEnum;
+import enums.OrientationNavireEnum;
+
 public class ModelNavireCroiseur extends ModelNavire {
     public final static int TAILLE = 5;
 

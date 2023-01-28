@@ -1,17 +1,9 @@
 //import org.kwhat.jnativehook.NativeKeyListener;
 
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import enums.ActionsNavirePossibleSurUneCarteEnum;
+import exceptions.*;
 import model.*;
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -93,9 +85,13 @@ public class Main implements Runnable {
         }
     }
 
-    private static PositionSurCarte getPositionSurCarteDepuisUtilisateur(Scanner scanner, boolean choixNavire){
-        System.out.printf("Veuillez selectionner un %s (ligne colonne, ex a 1, i 3 ...): ",choixNavire? "navire":"point à attaquer");
+    private static PositionSurCarte getPositionSurCarteDepuisUtilisateur(Scanner scanner, boolean choixNavire) throws QuitApplication {
+        System.out.printf("Veuillez selectionner un %s (ligne colonne, ex a 1, i 3 ...) %s ",choixNavire? "navire":"point à attaquer", choixNavire? "'quitter' pour quitter":"");
+
         var indexElement = scanner.nextLine();
+        if (choixNavire && indexElement.equals("quitter")){
+            throw new QuitApplication();
+        }
         int x,y;
         var indexElements = indexElement.split(" ");
         if (indexElements.length < 2) {
@@ -120,7 +116,7 @@ public class Main implements Runnable {
         return new PositionSurCarte(x,y);
     }
 
-    public static void main(String[] args) throws ExceptionPositionDejaOccupe, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionCompartimentHorsDeLaCarteHorizontalement, InterruptedException, ExceptionCompartimentPresentEnAvant, AucunNavireTrouverACettePosition, ExceptionCompartimentPresentEnArriere {
+    public static void main(String[] args) throws ExceptionPositionDejaOccupe, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionCompartimentHorsDeLaCarteHorizontalement, InterruptedException, ExceptionCompartimentPresentEnAvant, ExceptionAucunNavireTrouverACettePosition, ExceptionCompartimentPresentEnArriere {
         /*int[][] arr = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
 // Determine the center of the array
@@ -152,8 +148,23 @@ public class Main implements Runnable {
 
         while (true){
             Scanner scanner = new Scanner(System.in);
-            var positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, true);
-            if (positionSurCarteEntreeParLutilisateur == null)continue;
+
+            PositionSurCarte positionSurCarteEntreeParLutilisateur = null;
+            try {
+                positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, true);
+            } catch (QuitApplication e) {
+
+                System.out.println("Quitter vers le menu principal?");
+                if(new ModelMenuString("Oui","Non").run(scanner) == 1)
+                    continue;
+                System.out.println("Sauvegarder la partie en cour?");
+                if(new ModelMenuString("Oui","Non").run(scanner) == 0){
+
+                }
+                break;
+            }
+            if (positionSurCarteEntreeParLutilisateur == null)
+                continue;
             ModelNavire modelNavireTrouve = modelCarteJoueur.recupererNavireAlaPosition(positionSurCarteEntreeParLutilisateur);
             if (modelNavireTrouve == null){
                 System.out.printf("Aucun navire trouvé à la position %c %d%n",positionSurCarteEntreeParLutilisateur.getX()+'a',positionSurCarteEntreeParLutilisateur.getY());
@@ -203,7 +214,7 @@ public class Main implements Runnable {
                     return true;
                 } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, case occupée" + ConsoleColors.RESET);
-                } catch (AucunNavireTrouverACettePosition e) {
+                } catch (ExceptionAucunNavireTrouverACettePosition e) {
                     System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
                 } catch (Throwable e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Nord, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
@@ -215,7 +226,7 @@ public class Main implements Runnable {
                     return true;
                 } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, case occupé" + ConsoleColors.RESET);
-                } catch (AucunNavireTrouverACettePosition e) {
+                } catch (ExceptionAucunNavireTrouverACettePosition e) {
                     System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
                 } catch (Throwable e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer au Sud, le denier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
@@ -227,7 +238,7 @@ public class Main implements Runnable {
                     return true;
                 } catch (ExceptionCompartimentPresentEnAvant | ExceptionPositionDejaOccupe e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, case occupée" + ConsoleColors.RESET);
-                } catch (AucunNavireTrouverACettePosition e) {
+                } catch (ExceptionAucunNavireTrouverACettePosition e) {
                     System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
                 } catch (Throwable e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Ouest, le premier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
@@ -239,7 +250,7 @@ public class Main implements Runnable {
                     return true;
                 } catch (ExceptionCompartimentPresentEnArriere | ExceptionPositionDejaOccupe e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, case occupé" + ConsoleColors.RESET);
-                } catch (AucunNavireTrouverACettePosition e) {
+                } catch (ExceptionAucunNavireTrouverACettePosition e) {
                     System.out.println(ConsoleColors.RED + "Choix de Navire Incorrect" + ConsoleColors.RESET);
                 } catch (Throwable e) {
                     System.out.println(ConsoleColors.RED + "Impossible de se deplacer à l'Est, le dernier compartiment navire sera hors de la carte" + ConsoleColors.RESET);
@@ -259,6 +270,8 @@ public class Main implements Runnable {
                     return true;
                 } catch (ExceptionAttaqueSurUnePositionHorsDeLaCarte e) {
                     System.out.println(ConsoleColors.RED + "Impossible d'attaquer cette position elle est hors de la carte." + ConsoleColors.RESET);
+                } catch (QuitApplication e) {
+                    throw new RuntimeException(e);
                 }
 
             }
@@ -295,134 +308,5 @@ public class Main implements Runnable {
             }*/
         }
 
-    }
-}
-
-
-class SnakeGame extends KeyAdapter {
-    private static final int MAX_X = 20;
-    private static final int MAX_Y = 20;
-    private static int xPos;
-    private static int yPos;
-    private static int foodX;
-    private static int foodY;
-    private static int score;
-    private static boolean gameOver;
-
-    public static void main(String[] args) {
-        Signal.handle(new Signal("INT"), new SignalHandler() {
-            // Signal handler method
-            public void handle(Signal signal) {
-                System.out.println("Got signal" + signal);
-            }
-        });
-        initGame();
-
-        while (!gameOver) {
-            displayGame();
-            processInput();
-            updateGame();
-            checkCollision();
-        }
-
-        System.out.println("Game Over! Your score is: " + score);
-    }
-
-    private static void initGame() {
-        xPos = MAX_X / 2;
-        yPos = MAX_Y / 2;
-        foodX = (int) (Math.random() * MAX_X);
-        foodY = (int) (Math.random() * MAX_Y);
-        score = 0;
-        gameOver = false;
-    }
-
-    private static void displayGame() {
-        for (int i = 0; i < MAX_X; i++) {
-            for (int j = 0; j < MAX_Y; j++) {
-                if (i == yPos && j == xPos) {
-                    System.out.print("O");
-                } else if (i == foodY && j == foodX) {
-                    System.out.print("X");
-                } else {
-                    System.out.print("-");
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("Score: " + score);
-    }
-
-    private static void processInput(){
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in = new ByteArrayInputStream("a".getBytes());
-        System.setIn(in);
-
-        // do your thing
-
-        // optionally, reset System.in to its original
-        System.setIn(sysInBackup);
-        Scanner scanner = new Scanner(System.in);
-        String input;
-
-        input = scanner.nextLine();
-
-        switch (input) {
-            case "q" -> yPos--;
-            case "z" -> xPos--;
-            case "s" -> yPos++;
-            case "d" -> xPos++;
-        }
-    }
-    public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_W) {
-            yPos--;
-        } else if (key == KeyEvent.VK_A) {
-            xPos--;
-        } else if (key == KeyEvent.VK_S) {
-            yPos++;
-        } else if (key == KeyEvent.VK_D) {
-            xPos++;
-        }
-    }
-    private static void updateGame() {
-        if (xPos == foodX && yPos == foodY) {
-            score++;
-            foodX = (int) (Math.random() * MAX_X);
-            foodY = (int) (Math.random() * MAX_Y);
-        }
-    }
-
-    private static void checkCollision() {
-        if (xPos < 0 || xPos >= MAX_X || yPos < 0 || yPos >= MAX_Y) {
-            gameOver = true;
-        }
-    }
-}
-
-class GlobalKeyListenerExample implements NativeKeyListener {
-    public void nativeKeyPressed(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-    }
-
-    public void nativeKeyReleased(NativeKeyEvent e) {
-        System.out.println("Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-    }
-
-    public void nativeKeyTyped(NativeKeyEvent e) {
-        System.out.println("Key Typed: " + e.getKeyText(e.getKeyCode()));
-    }
-
-    public static void main(String[] args) {
-        try {
-            GlobalScreen.registerNativeHook();
-
-            GlobalKeyListenerExample listener = new GlobalKeyListenerExample();
-            GlobalScreen.addNativeKeyListener(listener);// getInstance().addNativeKeyListener(listener);
-
-        } catch (NativeHookException ex) {
-            System.err.println(ex.getMessage());
-        }
     }
 }

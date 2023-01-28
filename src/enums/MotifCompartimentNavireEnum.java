@@ -1,4 +1,6 @@
-package model;
+package enums;
+
+import model.ConsoleColors;
 
 public enum MotifCompartimentNavireEnum {
     DETRUIT(ConsoleColors.RED +"╳╳"+ConsoleColors.RESET),

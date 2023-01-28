@@ -1,11 +1,18 @@
 package model;
 
+import enums.ActionsNavirePossibleSurUneCarteEnum;
+import enums.MotifCompartimentNavireEnum;
+import enums.NavirePuissanceEnum;
+import enums.OrientationNavireEnum;
+import exceptions.*;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ModelCarte {
+public class ModelCarte implements Serializable {
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_SUD_EST = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.SUD, ActionsNavirePossibleSurUneCarteEnum.EST);
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_NORD_OUEST = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.NORD, ActionsNavirePossibleSurUneCarteEnum.OUEST);
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_VERTICAL = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.NORD, ActionsNavirePossibleSurUneCarteEnum.SUD);
@@ -368,5 +375,29 @@ public class ModelCarte {
             System.out.println(ConsoleColors.YELLOW+" Raté."+ConsoleColors.RESET);
         }
         // switch ()
+    }
+    public void sauvegarderCarte() throws IOException {
+
+        // create a FileOutputStream to write the object to a file
+        FileOutputStream fos = new FileOutputStream(String.format("%s.bin",name));
+
+        // create an ObjectOutputStream to write the object
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+        // write the object to the file
+        oos.writeObject(this);
+
+        // close the streams
+        oos.close();
+        fos.close();
+
+    }
+    public void chargerCarte() throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream(String.format("%s.bin",name));
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        ModelCarte obj = (ModelCarte) ois.readObject();
+        ois.close();
+        fis.close();
+
     }
 }

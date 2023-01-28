@@ -1,5 +1,12 @@
 package model;
 
+import enums.MotifCompartimentNavireEnum;
+import enums.NavireTypeEnum;
+import enums.OrientationNavireEnum;
+import exceptions.ExceptionNavireEndommagerDeplacementImpossible;
+import exceptions.ExceptionMouvementHorizontalException;
+import exceptions.ExceptionMouvementVerticalException;
+
 import java.util.Arrays;
 
 public class ModelNavire implements Cloneable{
@@ -57,13 +64,13 @@ public class ModelNavire implements Cloneable{
         if (estVertical()) {
             try {
                 incrementX();
-            } catch (MouvementVerticalException e) {
+            } catch (ExceptionMouvementVerticalException e) {
                 throw new RuntimeException(e);
             }
         } else if (estHorizontal()) {
             try {
                 incrementY();
-            } catch (MouvementHorizontalException e) {
+            } catch (ExceptionMouvementHorizontalException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -75,39 +82,39 @@ public class ModelNavire implements Cloneable{
         if (estVertical()) {
             try {
                 decrementX();
-            } catch (MouvementVerticalException e) {
+            } catch (ExceptionMouvementVerticalException e) {
                 throw new RuntimeException(e);
             }
         } else if (estHorizontal()) {
             try {
                 decrementY();
-            } catch (MouvementHorizontalException e) {
+            } catch (ExceptionMouvementHorizontalException e) {
                 throw new RuntimeException(e);
             }
         }
 
     }
-    public void incrementX() throws MouvementVerticalException {
+    public void incrementX() throws ExceptionMouvementVerticalException {
         if (orientationNavire != OrientationNavireEnum.VERTICAL)
-            throw new MouvementVerticalException();
+            throw new ExceptionMouvementVerticalException();
         getPremierCompartimentNavire().avancerVerticalement();
         setNavirePosition(compartimentNavires[0]);
     }
-    public void decrementX() throws MouvementVerticalException {
+    public void decrementX() throws ExceptionMouvementVerticalException {
         if (orientationNavire != OrientationNavireEnum.VERTICAL)
-            throw new MouvementVerticalException();
+            throw new ExceptionMouvementVerticalException();
         getPremierCompartimentNavire().reculerVerticalement();
         setNavirePosition(compartimentNavires[0]);
     }
-    private void incrementY() throws MouvementHorizontalException {
+    private void incrementY() throws ExceptionMouvementHorizontalException {
         if (orientationNavire != OrientationNavireEnum.HORIZONTAL)
-            throw new MouvementHorizontalException();
+            throw new ExceptionMouvementHorizontalException();
         getPremierCompartimentNavire().avancerHorizontalement();
         setNavirePosition(compartimentNavires[0]);
     }
-    private void decrementY() throws MouvementHorizontalException {
+    private void decrementY() throws ExceptionMouvementHorizontalException {
         if (orientationNavire != OrientationNavireEnum.HORIZONTAL)
-            throw new MouvementHorizontalException();
+            throw new ExceptionMouvementHorizontalException();
         getPremierCompartimentNavire().reculerHorizontalement();
         setNavirePosition(compartimentNavires[0]);
     }

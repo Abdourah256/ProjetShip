@@ -1,6 +1,8 @@
 package model;
 
 
+import enums.MotifCompartimentNavireEnum;
+
 public class CompartimentSurCarte extends PositionSurCarte {
 
     public ModelNavire getModelNavire() {
