@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class ModelNavire implements Cloneable, Serializable {
+    private boolean premiereAttaque = false;
     private final String name;
     private final NavireTypeEnum navireTypeEnum;
     private final int puissance;
@@ -193,5 +194,22 @@ public class ModelNavire implements Cloneable, Serializable {
 
     public int getPuissance() {
         return puissance;
+    }
+
+    public int getTopLeftX() {
+        return getPremierCompartimentNavire().getX();
+    }
+    public int getTopLeftY() {
+        return getPremierCompartimentNavire().getY();
+    }
+
+    public boolean estUnDestroyer() {
+        return navireTypeEnum == NavireTypeEnum.DESTROYER;
+    }
+    public void attaque(){
+        premiereAttaque = true;
+    }
+    public boolean avaitDejaRealiseUneAttaque(){
+        return premiereAttaque == true;
     }
 }

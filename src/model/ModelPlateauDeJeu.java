@@ -13,6 +13,7 @@ public class ModelPlateauDeJeu implements Serializable {
     public static final String GAME_SAVED_BIN = "_gameSaved.bin";
     private ModelCarte modelCarte;
     private ModelCarteRobot modelCarteRobot;
+
     
     public ModelPlateauDeJeu() throws ExceptionCompartimentHorsDeLaCarteHorizontalement, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionPositionDejaOccupe {
         modelCarte = new ModelCarte();
@@ -178,6 +179,8 @@ public class ModelPlateauDeJeu implements Serializable {
 
         ActionsNavirePossibleSurUneCarteEnum actionChoisisParLutilisateur;
 
+        boolean actionRobotPrecedenteAttaquee = false;
+
         while (true){
 
             PositionSurCarte positionSurCarteEntreeParLutilisateur = null;
@@ -241,7 +244,17 @@ public class ModelPlateauDeJeu implements Serializable {
                     System.out.println("le navire choisis ne peut effectuer aucune action, L'ordianateur reefectue un choix");
                     continue;
                 }
-                var actionChoisisParLeRobot = actionsNavirePossibleSurUneCarteEnumsPourLeRobot[new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length)];
+                int actionAleatoireParRobot = 0;
+                if (actionRobotPrecedenteAttaquee) {
+                    actionAleatoireParRobot = new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length);
+                    if (actionAleatoireParRobot ==0){
+                        if (actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length>0){
+                            actionAleatoireParRobot += new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length-1);
+                        }
+                    }
+                }
+                actionRobotPrecedenteAttaquee = actionAleatoireParRobot==0;
+                var actionChoisisParLeRobot = actionsNavirePossibleSurUneCarteEnumsPourLeRobot[actionAleatoireParRobot];
                 System.out.printf("L'ordinateur a choisit l'action %s%n", actionChoisisParLeRobot);
                 actionRobotTermineAvecSuccess = executerActionPrise(modelCarteRobot, modelCarte, actionChoisisParLeRobot, null, navireChoisiParRobot);
 
@@ -309,9 +322,21 @@ public class ModelPlateauDeJeu implements Serializable {
                     if (scanner != null)
                         positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, false);
                     else {
-                        var xRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
-                        var yRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
+                        int xRobot;
+                        int yRobot;
+                        if (attaquant.isCiblePrecedentAtteinte()) {
+                            xRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
+                            yRobot = new Random().nextInt(ModelCarte.TAILLE_CARTE_PAR_DEFAUT);
+                            attaquant.setCiblePrecedentAtteinte(false);
+                        }else{
+                            var naviresAttaque = attaque.getModelNaviresAsArray();
+                            var navireAattaqueChoisi = (ModelNavire)naviresAttaque[new Random().nextInt(naviresAttaque.length)];
+                            xRobot = navireAattaqueChoisi.getTopLeftX();
+                            yRobot = navireAattaqueChoisi.getTopLeftY();
+                            attaquant.setCiblePrecedentAtteinte(true);
+                        }
                         positionSurCarteEntreeParLutilisateur = new PositionSurCarte(xRobot, yRobot);
+
                     }
                     attaque.encaisserUneAttatque(modelNavireTrouve, positionSurCarteEntreeParLutilisateur);
                     return true;

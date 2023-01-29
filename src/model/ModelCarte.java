@@ -16,10 +16,10 @@ public class ModelCarte implements Serializable {
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_HORIZONTAL = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.OUEST, ActionsNavirePossibleSurUneCarteEnum.EST);
 
     private static final PositionSurCarte[] POINT_DATTAQUE_SELON_PUISSANCE_DATTAQUE = new PositionSurCarte[]{new PositionSurCarte(0,0), new PositionSurCarte(1,0), new PositionSurCarte(0,1), new PositionSurCarte(-1,0),  new PositionSurCarte(0,-1), new PositionSurCarte(1,-1), new PositionSurCarte(1,1), new PositionSurCarte(-1,1), new PositionSurCarte(-1,-1)};
+    public static final String CIBLE_HORS_CARTE = ConsoleColors.RED + " Hors carte." + ConsoleColors.RESET;
     public final String MOTIF_VIDE = "  ";
     public static final int TAILLE_CARTE_PAR_DEFAUT = 15;
     private final int taille;
-
     public boolean estCachee() {
         return cachee;
     }
@@ -348,9 +348,36 @@ public class ModelCarte implements Serializable {
         }
         for (var positionAttaque :
                 positionsAttaquees) {
+            if (!modelNavire.avaitDejaRealiseUneAttaque() && modelNavire.estUnDestroyer()){
+                var navigateurDePositionAttaque = new PositionSurCarte(positionAttaque);
+                for (int i = 0; i < 4; i++) {
+                    int counter = 0;
+                    for (int j = 0; j < 4; j++) {
+
+                        System.out.print("Scan de la position "+navigateurDePositionAttaque);
+                        if (verifierSiUnCompartimentPeutEtrePlaceSurLaCarte(navigateurDePositionAttaque)){
+                            if (estOccupe(navigateurDePositionAttaque))
+                                System.out.print(" "+compartimentNavires[navigateurDePositionAttaque.getX()][navigateurDePositionAttaque.getY()].getModelNavire().getMotifCompartimentNavire());
+                            else
+                                System.out.print(ConsoleColors.YELLOW+" Aucun navire."+ConsoleColors.RESET);
+                            navigateurDePositionAttaque.avancerHorizontalement();
+                            counter ++;
+                        }else {
+                            System.out.print(CIBLE_HORS_CARTE);
+                        }
+
+                        System.out.println();
+                    }
+                    for (; counter > 0 ; counter--)
+                        navigateurDePositionAttaque.reculerHorizontalement();
+                    navigateurDePositionAttaque.avancerVerticalement();
+                }
+            }
+
+            modelNavire.attaque();
             System.out.print("Attaque sur le point: "+positionAttaque);
             if (!verifierSiUnCompartimentPeutEtrePlaceSurLaCarte(positionAttaque)) {
-                System.out.println(ConsoleColors.RED +" Hors carte."+ConsoleColors.RESET);
+                System.out.println(CIBLE_HORS_CARTE);
                 continue;
             }
             if (estOccupe(positionAttaque)){
@@ -372,4 +399,14 @@ public class ModelCarte implements Serializable {
         }
         // switch ()
     }
+
+
+    public boolean isCiblePrecedentAtteinte(){
+        return ciblePrecedentAtteinte;
+    }
+    public void setCiblePrecedentAtteinte(boolean ciblePrecedentAtteinte){
+        this.ciblePrecedentAtteinte = ciblePrecedentAtteinte;
+    }
+
+    private boolean ciblePrecedentAtteinte = false;
 }
