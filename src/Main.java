@@ -1,12 +1,12 @@
 //import org.kwhat.jnativehook.NativeKeyListener;
 
 import exceptions.*;
-import jline.console.ConsoleReader;
+//import jline.console.ConsoleReader;
 import model.ModelCarte;
 import model.ModelMenuString;
 import model.ModelPlateauDeJeu;
+import utils.ConsolePagination;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -578,7 +578,8 @@ public class Main implements Runnable {
     }
     public static void main(String[] args) throws ExceptionPositionDejaOccupe, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionCompartimentHorsDeLaCarteHorizontalement, InterruptedException, ExceptionCompartimentPresentEnAvant, ExceptionAucunNavireTrouverACettePosition, ExceptionCompartimentPresentEnArriere, IOException, ClassNotFoundException {
 
-
+        System.out.println(ConsolePagination.genererUneBanniereApartirDe("LA BATAILLE DES NAVIRES"));
+        System.out.println();
         Scanner scanner = new Scanner(System.in);
 
 
@@ -598,7 +599,7 @@ public class Main implements Runnable {
 
     private static void afficherAideAuJeu(Scanner scanner) throws IOException {
 
-        if(ConsolePaginationB.print(ConsolePaginationB.afficherSousFormeDeBanniere("AIDE AU JEU")+"Caractéristiques du jeu\n" +
+        if(ConsolePagination.print("\n".repeat(Math.max(0, 3))+ConsolePagination.genererUneBanniereApartirDe("AIDE AU JEU")+"\n\nCaractéristiques du jeu\n" +
                 "Vous et l’ordinateur disposez chacun de deux grilles de 15*15 cases :\n" +
                 "- Une grille n°1 pour positionner et visualiser ses navires\n" +
                 "- Une grille n°2 pour visualiser les dégâts causés à l’adversaire\n" +
@@ -805,7 +806,7 @@ public class Main implements Runnable {
                 "│ o│  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\n" +
                 "└——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┘\n"
                 ,scanner))
-            ConsolePaginationB.print(AIDE_PARTIE_2, scanner);
+            ConsolePagination.print(AIDE_PARTIE_2, scanner);
 
     }
 
@@ -867,72 +868,8 @@ public class Main implements Runnable {
     }
 }
 
-class ConsolePagination {
-    public static boolean print(String text, Scanner scanner) {
-        String[] lines = text.split("\n");
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int pageSize = (int) (screenSize.height / 20);
-        int lineCount = lines.length;
-        int pageCount = (lineCount + pageSize - 1) / pageSize;
-        int currentPage = 0;
-
-        while (currentPage < pageCount) {
-            int start = currentPage * pageSize;
-            int end = Math.min((currentPage + 1) * pageSize, lineCount);
-            System.out.println("Page " + (currentPage + 1) + "/" + pageCount + ":");
-            for (int i = start; i < end; i++) {
-                System.out.println(lines[i]);
-            }
-            System.out.println();
-            System.out.print("Appuyer Entree pour continuer[entrer quitter pour quitter]... ");
-            if(Objects.equals(scanner.nextLine(), "quitter"))
-                return false;
-            currentPage++;
-        }
-        return true;
-    }
-}
 
 
-
- class ConsolePaginationB {
-    public static boolean print(String text, Scanner scanner) throws IOException {
-        //System.out.println("\n\n\n\n\n");
-        ConsoleReader reader = new ConsoleReader();
-        String[] lines = text.split("\n");
-        int lineCount = lines.length;
-        int consoleHeight = reader.getTerminal().getHeight();
-        int pageSize = consoleHeight - 1;
-        int pageCount = (lineCount + pageSize - 1) / pageSize;
-        int currentPage = 0;
-
-        while (currentPage < pageCount) {
-            int start = currentPage * pageSize;
-            int end = Math.min((currentPage + 1) * pageSize, lineCount);
-            reader.clearScreen();
-            System.out.println("Page " + (currentPage + 1) + "/" + pageCount + ":");
-            for (int i = start; i < end; i++) {
-                System.out.println(lines[i]);
-            }
-            System.out.println();
-            System.out.print("Appuyer Entree pour continuer[entrer quitter pour quitter]... ");
-            if(Objects.equals(scanner.nextLine(), "quitter"))
-                return false;
-            //reader.readCharacter();
-            currentPage++;
-        }
-        return true;
-    }
-
-     static String afficherSousFormeDeBanniere(String message) {
-         StringBuilder sb = new StringBuilder();
-         for (char c : message.toCharArray()) {
-             sb.append("  ").append(c).append("  \n");
-             sb.append(" ").append("_".repeat(5)).append(" \n");
-         }
-         return sb.toString();
-     }
- }
 
 
 
