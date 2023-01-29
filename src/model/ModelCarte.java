@@ -164,8 +164,8 @@ public class ModelCarte implements Serializable {
                 throw new ExceptionPositionDejaOccupe();
             compartimentNavires[compartimentNavire.getX()][compartimentNavire.getY()] = compartimentNavire;
         }
-        if (modelNavire.estHorizontal())
-            for (int i = 0; i < modelNavire.getTaille(); i++)
+        //if (modelNavire.estHorizontal())
+        //    for (int i = 0; i < modelNavire.getTaille(); i++)
         if (!modelNavires.contains(modelNavire))
             modelNavires.add(modelNavire);
         return true;
@@ -206,7 +206,6 @@ public class ModelCarte implements Serializable {
         StringBuilder ligneDelimiteur = new StringBuilder();
         ligneDelimiteur.append('├');
         ligneDelimiteur.append("━━┼".repeat(Math.max(0, taille+1)));
-        //ligneDelimiteur.append("-".repeat(Math.max(0, taille-1)));
         ligneDelimiteur.append("\b┤\n");
         return ligneDelimiteur;
     }
@@ -234,7 +233,7 @@ public class ModelCarte implements Serializable {
         return (positionSurCarte.getX()>=0&& positionSurCarte.getX()<taille&& positionSurCarte.getY()>=0&& positionSurCarte.getY()<taille);
     }
     public void effectuerUnDeplacementAvecLeNavire(ModelNavire modelNavire, ActionsNavirePossibleSurUneCarteEnum actionNavirePossibleSurUneCarteEnum) throws Throwable {
-        var actionPossibleDuNavire = getToutesLesActionPossibleDuNavire(modelNavire);
+        var actionPossibleDuNavire = getToutesLesActionsPossiblesDuNavire(modelNavire);
         if (!Arrays.asList(actionPossibleDuNavire).contains(actionNavirePossibleSurUneCarteEnum))
             throw new ExceptionImpossibleDEffectuerUneActionAvecUnNavire();
 
@@ -249,7 +248,7 @@ public class ModelCarte implements Serializable {
             faireReculerLeNavireSeTrouvantALaPosition(modelNavire);
         }
     }
-    public ActionsNavirePossibleSurUneCarteEnum[] getToutesLesActionPossibleDuNavire(ModelNavire modelNavire){
+    public ActionsNavirePossibleSurUneCarteEnum[] getToutesLesActionsPossiblesDuNavire(ModelNavire modelNavire){
         if (modelNavire ==null)
             return null;
         int nombreDActions = modelNavire.peutAttaquer()? 1:0;

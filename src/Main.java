@@ -14,7 +14,7 @@ import java.util.*;
 import static java.lang.Thread.sleep;
 
 public class Main implements Runnable {
-    public static final String AIDE_PARTIE_2 = "-------------------------------- Appuyer sur entrée pour laisser l'ordianteur jouer --------------------------------\n" +
+    public static final String AIDE_PARTIE_2 = "-------------------------------- Appuyer sur entrée pour laisser l'ordinateur jouer --------------------------------\n" +
             "\n" +
             "\n" +
             "-------------------------------- L'ordinateur effectue un choix de navire--------------------------------\n" +
@@ -171,7 +171,7 @@ public class Main implements Runnable {
             "├━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┤\n" +
             "│ o│  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\n" +
             "└——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┘\n" +
-            "-------------------------------- Appuyer sur entrée pour laisser l'ordianteur jouer --------------------------------\n" +
+            "-------------------------------- Appuyer sur entrée pour laisser l'ordinateur jouer --------------------------------\n" +
             "\n" +
             "\n" +
             "-------------------------------- L'ordinateur effectue un choix de navire--------------------------------\n" +
@@ -327,7 +327,7 @@ public class Main implements Runnable {
             "├━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┤\n" +
             "│ o│  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\n" +
             "└——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┘\n" +
-            "-------------------------------- Appuyer sur entrée pour laisser l'ordianteur jouer --------------------------------\n" +
+            "-------------------------------- Appuyer sur entrée pour laisser l'ordinateur jouer --------------------------------\n" +
             "\n" +
             "\n" +
             "-------------------------------- L'ordinateur effectue un choix de navire--------------------------------\n" +
@@ -486,7 +486,7 @@ public class Main implements Runnable {
             "├━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┤\n" +
             "│ o│  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\n" +
             "└——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┘\n" +
-            "-------------------------------- Appuyer sur entrée pour laisser l'ordianteur jouer --------------------------------\n" +
+            "-------------------------------- Appuyer sur entrée pour laisser l'ordinateur jouer --------------------------------\n" +
             "\n" +
             "-------------------------------- L'ordinateur effectue un choix de navire--------------------------------\n" +
             "L'ordinateur a choisi un navire.\n" +

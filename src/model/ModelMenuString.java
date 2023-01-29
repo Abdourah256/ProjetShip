@@ -22,11 +22,11 @@ public class ModelMenuString {
             try {
                 choix_nombre = Integer.parseInt(choix_texte);
                 if (choix_nombre < 1 || choix_nombre > modelMenuItems.length)
-                    System.out.println("Désolé le nombre choisi ne fait pas partir de l'intervalle proposée.");
+                    System.out.println(ConsoleColors.YELLOW+"Désolé le nombre choisi ne fait pas partir de l'intervalle proposée."+ConsoleColors.RESET);
                 else
                     return choix_nombre - 1;
             }catch (RuntimeException runtimeException){
-                System.out.println("Veuillez entrer un choix correct.");
+                System.out.println(ConsoleColors.YELLOW+"Veuillez entrer un choix correct."+ConsoleColors.RESET);
             }
 
             afficherTextPourSaisie();

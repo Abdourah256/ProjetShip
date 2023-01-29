@@ -6,7 +6,7 @@ import java.util.Random;
 public class ModelCarteRobot extends ModelCarte{
     public ModelCarteRobot(){
         super();
-        setCachee(true);
+        //setCachee(true);
     }
 
     public ModelNavire choisirAleatoirementUnNavire() {

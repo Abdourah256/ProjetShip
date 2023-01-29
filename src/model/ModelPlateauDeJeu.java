@@ -4,6 +4,7 @@ import enums.ActionsNavirePossibleSurUneCarteEnum;
 import exceptions.*;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
@@ -164,15 +165,14 @@ public class ModelPlateauDeJeu implements Serializable {
         }
         return new PositionSurCarte(x,y);
     }
+    public static String[] extendArray(String[] originalArray, int extendBy) {
+        String[] extendedArray = new String[originalArray.length + extendBy];
+        System.arraycopy(originalArray, 0, extendedArray, 0, originalArray.length);
+        return extendedArray;
+    }
 
     public void demarerLeJeu(Scanner scanner
     ) throws IOException, ExceptionCompartimentHorsDeLaCarteHorizontalement, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionPositionDejaOccupe {
-
-        ModelCarte modelCarteJoueur = new ModelCarte();
-        creerAleatoirementTousLesNaviresSurLaCarte(modelCarteJoueur);
-
-        ModelCarteRobot modelCarteRobot = new ModelCarteRobot();
-        creerAleatoirementTousLesNaviresSurLaCarte(modelCarteRobot);
 
         afficherLesCartes();
 
@@ -185,17 +185,19 @@ public class ModelPlateauDeJeu implements Serializable {
                 positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, true);
             } catch (QuitApplication e) {
 
-                System.out.println("Quitter vers le menu principal?");
+                System.out.println("\nQuitter vers le menu principal?");
                 if(new ModelMenuString("Oui","Non").run(scanner) == 1)
                     continue;
-                System.out.println("Sauvegarder la partie en cour?");
-                if(new ModelMenuString("Oui","Non").run(scanner) == 0)
+                System.out.println("\nSauvegarder la partie en cour?");
+                if(new ModelMenuString("Oui","Non").run(scanner) == 0) {
                     sauvegarderPlateau();
+                    System.out.println(ConsoleColors.GREEN_BACKGROUND+"Partie sauvegardée avec succès."+ConsoleColors.RESET);
+                }
                 break;
             }
             if (positionSurCarteEntreeParLutilisateur == null)
                 continue;
-            ModelNavire modelNavireTrouve = modelCarteJoueur.recupererNavireAlaPosition(positionSurCarteEntreeParLutilisateur);
+            ModelNavire modelNavireTrouve = modelCarte.recupererNavireAlaPosition(positionSurCarteEntreeParLutilisateur);
             if (modelNavireTrouve == null){
                 System.out.printf("Aucun navire trouvé à la position %c %d%n",positionSurCarteEntreeParLutilisateur.getX()+'a',positionSurCarteEntreeParLutilisateur.getY());
                 continue;
@@ -203,16 +205,22 @@ public class ModelPlateauDeJeu implements Serializable {
 
                 System.out.printf("Navire trouvé à la position %c %d: %s%n",positionSurCarteEntreeParLutilisateur.getX()+'a',positionSurCarteEntreeParLutilisateur.getY(),modelNavireTrouve.getTypeNavire());
             }
-            ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnums = modelCarteJoueur.getToutesLesActionPossibleDuNavire(modelNavireTrouve);
+            ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnums = modelCarte.getToutesLesActionsPossiblesDuNavire(modelNavireTrouve);
             if (actionsNavirePossibleSurUneCarteEnums.length <= 0) {
                 System.out.println("le navire choisis ne peut effectuer aucune action, veuillez reessayer");
                 continue;
             }
-            actionChoisisParLutilisateur = actionsNavirePossibleSurUneCarteEnums[new ModelMenuStringActionSurNavire(actionsNavirePossibleSurUneCarteEnums).run(scanner)];
+            String [] actionsNavirePossibleSurUneCarteEnumsString = Arrays.stream(actionsNavirePossibleSurUneCarteEnums).map(Object::toString).toArray(String[]::new);
+            actionsNavirePossibleSurUneCarteEnumsString = extendArray(actionsNavirePossibleSurUneCarteEnumsString,1);
+            actionsNavirePossibleSurUneCarteEnumsString[actionsNavirePossibleSurUneCarteEnumsString.length-1] = "Annuler";
+            var choixEntierEffectueParLutilisateur = new ModelMenuString(actionsNavirePossibleSurUneCarteEnumsString).run(scanner);
+            if (choixEntierEffectueParLutilisateur>=actionsNavirePossibleSurUneCarteEnums.length || choixEntierEffectueParLutilisateur<0)
+                continue;
+            actionChoisisParLutilisateur = actionsNavirePossibleSurUneCarteEnums[choixEntierEffectueParLutilisateur];
 
             // scanner.close();
 
-            executerActionPrise(modelCarteJoueur, modelCarteRobot, actionChoisisParLutilisateur, scanner, modelNavireTrouve);
+            executerActionPrise(modelCarte, modelCarteRobot, actionChoisisParLutilisateur, scanner, modelNavireTrouve);
             clearScreen();
             afficherLesCartes();
             System.out.println("--------------------------------"+" Appuyer sur entrée pour laisser l'ordinateur jouer "+"--------------------------------");
@@ -225,16 +233,17 @@ public class ModelPlateauDeJeu implements Serializable {
                 System.out.println("--------------------------------"+" L'ordinateur effectue un choix de navire"+"--------------------------------");
 
                 var navireChoisiParRobot = modelCarteRobot.choisirAleatoirementUnNavire();
-                System.out.println("L'ordinateur a choisi un navire.");
+                System.out.printf("L'ordinateur a choisi le navire de type %s à la position %c%d.%n",navireChoisiParRobot.getTypeNavire(),navireChoisiParRobot.getPremierCompartimentNavire().getX()+'a',navireChoisiParRobot.getPremierCompartimentNavire().getY()
+                );
 
-                ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnumsPourLeRobot = modelCarteJoueur.getToutesLesActionPossibleDuNavire(navireChoisiParRobot);
+                ActionsNavirePossibleSurUneCarteEnum[] actionsNavirePossibleSurUneCarteEnumsPourLeRobot = modelCarteRobot.getToutesLesActionsPossiblesDuNavire(navireChoisiParRobot);
                 if (actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length <=0) {
-                    System.out.println("le navire choisis ne peut effectuer aucune action, veuillez reessayer");
+                    System.out.println("le navire choisis ne peut effectuer aucune action, L'ordianateur reefectue un choix");
                     continue;
                 }
                 var actionChoisisParLeRobot = actionsNavirePossibleSurUneCarteEnumsPourLeRobot[new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length)];
-
-                actionRobotTermineAvecSuccess = executerActionPrise(modelCarteRobot, modelCarteJoueur, actionChoisisParLeRobot, null, navireChoisiParRobot);
+                System.out.printf("L'ordinateur a choisit l'action %s%n", actionChoisisParLeRobot);
+                actionRobotTermineAvecSuccess = executerActionPrise(modelCarteRobot, modelCarte, actionChoisisParLeRobot, null, navireChoisiParRobot);
 
             }
             System.out.println("--------------------------------"+" Action effectué par l'ordinateur, A votre tour "+"--------------------------------");

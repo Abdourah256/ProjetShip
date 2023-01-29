@@ -9,6 +9,7 @@ import exceptions.ExceptionNavireEndommagerDeplacementImpossible;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class ModelNavire implements Cloneable, Serializable {
     private final String name;
@@ -44,7 +45,7 @@ public class ModelNavire implements Cloneable, Serializable {
         this(modelNavire.navireTypeEnum, modelNavire.puissance, modelNavire.getOrientationNavire(),modelNavire.taille, modelNavire.getPremierCompartimentNavire(), modelNavire.motifCompartimentNavireEnum);
     }
     protected ModelNavire(NavireTypeEnum navireTypeEnum, int puissance, OrientationNavireEnum orientationNavire, int taille, PositionSurCarte positionSurCarte, MotifCompartimentNavireEnum motifCompartimentNavireEnum) {
-        this.name = String.format("%s-%s", navireTypeEnum.toString(), "UUID.randomUUID()");
+        this.name = String.format("%s-%s", navireTypeEnum.toString(), UUID.randomUUID());
         this.navireTypeEnum = navireTypeEnum;
         this.puissance = puissance;
         this.orientationNavire = orientationNavire;
