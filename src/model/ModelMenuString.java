@@ -10,6 +10,8 @@ public class ModelMenuString {
         for (int i = 0; i < items.length; i++)
             this.modelMenuItems[i] = String.format("%d -> %s", i+1, items[i]);
     }
+
+
     public int run(Scanner scanner){
         afficherTextPourSaisie();
         String choix_texte = "";
@@ -34,6 +36,7 @@ public class ModelMenuString {
     }
 
     private void afficherTextPourSaisie() {
+        System.out.println('\n'+ConsoleColors.BLACK_BACKGROUND_BRIGHT+"Liste de choix possibles\n"+ConsoleColors.RESET);
         System.out.println(this);
         System.out.printf("Veuillez Faire un choix entre [1-%d]: ", modelMenuItems.length);
     }

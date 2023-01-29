@@ -1,6 +1,8 @@
 package model;
 
-public class PositionSurCarte {
+import java.io.Serializable;
+
+public class PositionSurCarte implements Serializable {
     private int x;
 
     @Override

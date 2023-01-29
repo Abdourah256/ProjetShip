@@ -1,14 +1,15 @@
 //import org.kwhat.jnativehook.NativeKeyListener;
 
 import exceptions.*;
+import jline.console.ConsoleReader;
 import model.ModelCarte;
 import model.ModelMenuString;
 import model.ModelPlateauDeJeu;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Thread.sleep;
 
@@ -575,7 +576,7 @@ public class Main implements Runnable {
         this.modelCartesJoueur = modelCartesJoueur;
         this.modelCartesRobot = modelCartesRobot;
     }
-    public static void main(String[] args) throws ExceptionPositionDejaOccupe, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionCompartimentHorsDeLaCarteHorizontalement, InterruptedException, ExceptionCompartimentPresentEnAvant, ExceptionAucunNavireTrouverACettePosition, ExceptionCompartimentPresentEnArriere, IOException {
+    public static void main(String[] args) throws ExceptionPositionDejaOccupe, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionCompartimentHorsDeLaCarteHorizontalement, InterruptedException, ExceptionCompartimentPresentEnAvant, ExceptionAucunNavireTrouverACettePosition, ExceptionCompartimentPresentEnArriere, IOException, ClassNotFoundException {
 
 
         Scanner scanner = new Scanner(System.in);
@@ -595,9 +596,9 @@ public class Main implements Runnable {
 
     }
 
-    private static void afficherAideAuJeu(Scanner scanner) {
+    private static void afficherAideAuJeu(Scanner scanner) throws IOException {
 
-        if(ConsolePagination.print("Caractéristiques du jeu\n" +
+        if(ConsolePaginationB.print(ConsolePaginationB.afficherSousFormeDeBanniere("AIDE AU JEU")+"Caractéristiques du jeu\n" +
                 "Vous et l’ordinateur disposez chacun de deux grilles de 15*15 cases :\n" +
                 "- Une grille n°1 pour positionner et visualiser ses navires\n" +
                 "- Une grille n°2 pour visualiser les dégâts causés à l’adversaire\n" +
@@ -803,14 +804,38 @@ public class Main implements Runnable {
                 "├━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┼━━┤\n" +
                 "│ o│  │  │  │  │  │  │  │  │  │  │  │  │  │  │  │\n" +
                 "└——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┴——┘\n"
-                , scanner))
-            ConsolePagination.print(AIDE_PARTIE_2, scanner);
+                ,scanner))
+            ConsolePaginationB.print(AIDE_PARTIE_2, scanner);
 
     }
 
     private static void chargerJeu(Scanner scanner
-                                                  ) throws IOException {
-
+                                                  ) throws IOException, ExceptionCompartimentHorsDeLaCarteHorizontalement, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionPositionDejaOccupe, ClassNotFoundException {
+        File dir = new File(".");
+        File[] files = dir.listFiles();
+        assert files != null;
+        int counter = 0;
+        var sauvegardes = new ArrayList<String>();
+        var choix_de_sauvegardes_a_charger = new ArrayList<String>();
+        for (File file : files) {
+            // .format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"))
+            if (file.getName().endsWith(ModelPlateauDeJeu.GAME_SAVED_BIN)) {
+                counter ++;
+                sauvegardes.add(file.getName());
+                choix_de_sauvegardes_a_charger.add(String.format("Sauvegarde %d - Date de sauvegarde: %s", counter, new Date(file.lastModified())));
+            }
+        }
+        if (counter == 0){
+            System.out.println("Aucune sauvegarde n'a été effectuée.");
+        }else{
+            choix_de_sauvegardes_a_charger.add("annuler");
+            var choixUtilisateur = new ModelMenuString(Arrays.stream(choix_de_sauvegardes_a_charger.toArray()).map(Object::toString).toArray(String[]::new)).run(scanner);
+            if (choixUtilisateur<sauvegardes.size() && choixUtilisateur>=0){
+                ModelPlateauDeJeu modelPlateauDeJeuCharge = new ModelPlateauDeJeu();
+                modelPlateauDeJeuCharge.chargerPlateau(sauvegardes.get(choixUtilisateur));
+                modelPlateauDeJeuCharge.demarerLeJeu(scanner);
+            }
+        }
     }
 
 
@@ -867,6 +892,48 @@ class ConsolePagination {
         return true;
     }
 }
+
+
+
+ class ConsolePaginationB {
+    public static boolean print(String text, Scanner scanner) throws IOException {
+        //System.out.println("\n\n\n\n\n");
+        ConsoleReader reader = new ConsoleReader();
+        String[] lines = text.split("\n");
+        int lineCount = lines.length;
+        int consoleHeight = reader.getTerminal().getHeight();
+        int pageSize = consoleHeight - 1;
+        int pageCount = (lineCount + pageSize - 1) / pageSize;
+        int currentPage = 0;
+
+        while (currentPage < pageCount) {
+            int start = currentPage * pageSize;
+            int end = Math.min((currentPage + 1) * pageSize, lineCount);
+            reader.clearScreen();
+            System.out.println("Page " + (currentPage + 1) + "/" + pageCount + ":");
+            for (int i = start; i < end; i++) {
+                System.out.println(lines[i]);
+            }
+            System.out.println();
+            System.out.print("Appuyer Entree pour continuer[entrer quitter pour quitter]... ");
+            if(Objects.equals(scanner.nextLine(), "quitter"))
+                return false;
+            //reader.readCharacter();
+            currentPage++;
+        }
+        return true;
+    }
+
+     static String afficherSousFormeDeBanniere(String message) {
+         StringBuilder sb = new StringBuilder();
+         for (char c : message.toCharArray()) {
+             sb.append("  ").append(c).append("  \n");
+             sb.append(" ").append("_".repeat(5)).append(" \n");
+         }
+         return sb.toString();
+     }
+ }
+
 
 
 

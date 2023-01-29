@@ -9,12 +9,15 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class ModelPlateauDeJeu implements Serializable {
+    public static final String GAME_SAVED_BIN = "_gameSaved.bin";
     private ModelCarte modelCarte;
     private ModelCarteRobot modelCarteRobot;
     
-    public ModelPlateauDeJeu() {
-        this.modelCarte = new ModelCarte();
+    public ModelPlateauDeJeu() throws ExceptionCompartimentHorsDeLaCarteHorizontalement, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionPositionDejaOccupe {
+        modelCarte = new ModelCarte();
+        creerAleatoirementTousLesNaviresSurLaCarte(modelCarte);
         this.modelCarteRobot = new ModelCarteRobot();
+        creerAleatoirementTousLesNaviresSurLaCarte(modelCarteRobot);
     }
 
     private ModelCarte getModelCarte() {
@@ -36,7 +39,8 @@ public class ModelPlateauDeJeu implements Serializable {
     private void sauvegarderPlateau() throws IOException {
 
         // create a FileOutputStream to write the object to a file
-        FileOutputStream fos = new FileOutputStream(String.format("%s%s.bin",modelCarte.getName(),modelCarteRobot.getName()));
+        // LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")),
+        FileOutputStream fos = new FileOutputStream(String.format("%s%s%s",modelCarte.getName(),modelCarteRobot.getName(), GAME_SAVED_BIN));
 
         // create an ObjectOutputStream to write the object
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -49,13 +53,15 @@ public class ModelPlateauDeJeu implements Serializable {
         fos.close();
 
     }
-    private void chargerPlateau() throws IOException, ClassNotFoundException {
-        FileInputStream fis = new FileInputStream(String.format("%s%s.bin",modelCarte.getName(),modelCarteRobot.getName()));
+    public void chargerPlateau(String sauvegarde) throws IOException, ClassNotFoundException, ExceptionCompartimentHorsDeLaCarteHorizontalement, ExceptionCompartimentHorsDeLaCarteVerticalement, ExceptionPositionDejaOccupe {
+
+        FileInputStream fis = new FileInputStream(sauvegarde);
         ObjectInputStream ois = new ObjectInputStream(fis);
-        ModelCarte obj = (ModelCarte) ois.readObject();
+        ModelPlateauDeJeu plateauDeJeu = (ModelPlateauDeJeu) ois.readObject();
+        modelCarte = plateauDeJeu.getModelCarte();
+        modelCarteRobot = plateauDeJeu.getModelCarteRobot();
         ois.close();
         fis.close();
-
     }
     private void afficherLesCartes() {
         System.out.println("\nCarte Joueur:\n" + modelCarte);
@@ -183,9 +189,8 @@ public class ModelPlateauDeJeu implements Serializable {
                 if(new ModelMenuString("Oui","Non").run(scanner) == 1)
                     continue;
                 System.out.println("Sauvegarder la partie en cour?");
-                if(new ModelMenuString("Oui","Non").run(scanner) == 0){
-
-                }
+                if(new ModelMenuString("Oui","Non").run(scanner) == 0)
+                    sauvegarderPlateau();
                 break;
             }
             if (positionSurCarteEntreeParLutilisateur == null)

@@ -3,13 +3,14 @@ package model;
 import enums.MotifCompartimentNavireEnum;
 import enums.NavireTypeEnum;
 import enums.OrientationNavireEnum;
-import exceptions.ExceptionNavireEndommagerDeplacementImpossible;
 import exceptions.ExceptionMouvementHorizontalException;
 import exceptions.ExceptionMouvementVerticalException;
+import exceptions.ExceptionNavireEndommagerDeplacementImpossible;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class ModelNavire implements Cloneable{
+public class ModelNavire implements Cloneable, Serializable {
     private final String name;
     private final NavireTypeEnum navireTypeEnum;
     private final int puissance;

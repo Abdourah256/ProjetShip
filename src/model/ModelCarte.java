@@ -6,11 +6,8 @@ import enums.NavirePuissanceEnum;
 import enums.OrientationNavireEnum;
 import exceptions.*;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.io.Serializable;
+import java.util.*;
 
 public class ModelCarte implements Serializable {
     public static final List<ActionsNavirePossibleSurUneCarteEnum> LIST_ACTIONS_NAVIRE_DEPLACEMENT_SUD_EST = Arrays.asList(ActionsNavirePossibleSurUneCarteEnum.SUD, ActionsNavirePossibleSurUneCarteEnum.EST);
@@ -46,7 +43,7 @@ public class ModelCarte implements Serializable {
     private final CompartimentSurCarte[][] compartimentNavires;
     public ModelCarte() {
         this.taille = TAILLE_CARTE_PAR_DEFAUT;
-        this.name =  String.format("CARTE-%s", "UUID.randomUUID()");
+        this.name =  String.format("CARTE-%s", UUID.randomUUID());
         this.compartimentNavires = new CompartimentSurCarte[taille][taille];
         this.modelNavires = new ArrayList<>();
         for (int i = 0; i < taille; i++)

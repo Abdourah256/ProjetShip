@@ -3,7 +3,9 @@ package model;
 
 import enums.MotifCompartimentNavireEnum;
 
-public class CompartimentSurCarte extends PositionSurCarte {
+import java.io.Serializable;
+
+public class CompartimentSurCarte extends PositionSurCarte implements Serializable {
 
     public ModelNavire getModelNavire() {
         return modelNavire;
