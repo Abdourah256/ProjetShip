@@ -376,28 +376,4 @@ public class ModelCarte implements Serializable {
         }
         // switch ()
     }
-    public void sauvegarderCarte() throws IOException {
-
-        // create a FileOutputStream to write the object to a file
-        FileOutputStream fos = new FileOutputStream(String.format("%s.bin",name));
-
-        // create an ObjectOutputStream to write the object
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-        // write the object to the file
-        oos.writeObject(this);
-
-        // close the streams
-        oos.close();
-        fos.close();
-
-    }
-    public void chargerCarte() throws IOException, ClassNotFoundException {
-        FileInputStream fis = new FileInputStream(String.format("%s.bin",name));
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        ModelCarte obj = (ModelCarte) ois.readObject();
-        ois.close();
-        fis.close();
-
-    }
 }
