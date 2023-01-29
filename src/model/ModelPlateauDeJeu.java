@@ -182,7 +182,15 @@ public class ModelPlateauDeJeu implements Serializable {
         boolean actionRobotPrecedenteAttaquee = false;
 
         while (true){
-
+            if (!modelCarteRobot.aEncoreUnNavireCapableDattaquer() || !modelCarte.aEncoreUnNavireCapableDattaquer()) {
+                if (!modelCarteRobot.aEncoreUnNavireCapableDattaquer()) {
+                    System.out.println(ConsoleColors.GREEN_BACKGROUND + "Felicitation Vous avez remporté cette manche" + ConsoleColors.RESET);
+                }
+                if (!modelCarte.aEncoreUnNavireCapableDattaquer()) {
+                    System.out.println(ConsoleColors.RED_BACKGROUND + "Oushh Vous avez perdu cette manche... peut être une autre fois." + ConsoleColors.RESET);
+                }
+                return;
+            }
             PositionSurCarte positionSurCarteEntreeParLutilisateur = null;
             try {
                 positionSurCarteEntreeParLutilisateur = getPositionSurCarteDepuisUtilisateur(scanner, true);

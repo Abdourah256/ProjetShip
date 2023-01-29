@@ -409,4 +409,13 @@ public class ModelCarte implements Serializable {
     }
 
     private boolean ciblePrecedentAtteinte = false;
+
+    public boolean aEncoreUnNavireCapableDattaquer(){
+        for (var navireModel:modelNavires
+             ) {
+            if (navireModel.peutSeDeplacer())
+                return true;
+        }
+        return false;
+    }
 }
