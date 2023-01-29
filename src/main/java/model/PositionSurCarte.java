@@ -1,4 +1,4 @@
-package main.java.model;
+package model;
 
 import java.io.Serializable;
 
@@ -40,22 +40,18 @@ public class PositionSurCarte implements Serializable {
         this.y = y;
     }
 
-    public PositionSurCarte avancerHorizontalement(){
+    public void avancerHorizontalement(){
         y++;
-        return this;
     }
 
-    public PositionSurCarte avancerVerticalement(){
+    public void avancerVerticalement(){
         x++;
-        return this;
     }
-    public PositionSurCarte reculerHorizontalement(){
+    public void reculerHorizontalement(){
         y--;
-        return this;
     }
 
-    public PositionSurCarte reculerVerticalement(){
+    public void reculerVerticalement(){
         x--;
-        return this;
     }
 }
