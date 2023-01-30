@@ -256,7 +256,7 @@ public class ModelPlateauDeJeu implements Serializable {
                 if (actionRobotPrecedenteAttaquee) {
                     actionAleatoireParRobot = new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length);
                     if (actionAleatoireParRobot ==0){
-                        if (actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length>0){
+                        if (actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length>1){
                             actionAleatoireParRobot += new Random().nextInt(actionsNavirePossibleSurUneCarteEnumsPourLeRobot.length-1);
                         }
                     }
