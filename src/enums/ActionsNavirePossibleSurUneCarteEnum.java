@@ -5,10 +5,7 @@ public enum ActionsNavirePossibleSurUneCarteEnum {
     EST("Deplacement Est"),
     NORD("Deplacement Nord"),
     SUD("Deplacement Sud"),
-    ATTAQUER("Attaquer"),
-    SAUVEGARDER_ET_QUITTER("Sauvegarder et quitter"),
-    QUITTER("Quitter"),
-    ;
+    ATTAQUER("Attaquer");
     private final String action;
 
     ActionsNavirePossibleSurUneCarteEnum(String action) {
